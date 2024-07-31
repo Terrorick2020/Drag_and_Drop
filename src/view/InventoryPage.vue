@@ -19,6 +19,7 @@ import FooterInventoryBlock from './components/FooterInventoryBlock.vue';
 
 
 export default {
+    name: 'InventoryPage',
     components: { InterfaceBlock, InventoryBlock, FooterInventoryBlock },
     mounted() {
         this.getGritItem();

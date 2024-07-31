@@ -8,7 +8,11 @@
     </div>
 </template>
 
-<script></script>
+<script>
+export default {
+    name: 'InterfaceBlock'
+}
+</script>
 
 <style lang="scss" scoped>
 .panel__interface {

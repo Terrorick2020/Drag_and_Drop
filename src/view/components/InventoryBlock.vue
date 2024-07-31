@@ -3,6 +3,7 @@
         <div class="inventory__grid-box">
             <div @drop="onDrop($event, elem.id)" @dragover.prevent @dragenter.prevent class="grid-item droppable-box" v-for="elem in getGridItem" :key="elem.id">
                 <div @dragstart="onDragstart($event, drag_item)"
+                     @click="openInfoPanel( drag_item )"
                      class="item__draggable"
                      v-for="drag_item in getDraggableItems.filter(x => x.cellId == elem.id)"
                      :key="drag_item.id"
@@ -11,21 +12,27 @@
                      <p class="draggable__count">{{ drag_item.count }}</p>
                 </div>
             </div>
-            <div class="inventory__info-panel">
-
-            </div>
+            <InventoryInfo :item="item" @update-info-panel-state="handlUpdateInfoPanelState" :style="`right: ${infoPanelIsOpen ? '0px' : '-400px'}`" />
         </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import InventoryInfo from './InventoryInfo.vue';
 
 
 export default {
     name: 'InventoryBlock',
+    components: { InventoryInfo },
     computed: {
         ...mapGetters(['getGridItem', 'getDraggableItems'])
+    },
+    data() {
+        return {
+            infoPanelIsOpen: false,
+            item: {}
+        }
     },
     methods: {
         onDragstart( event, item ) {
@@ -34,18 +41,25 @@ export default {
             event.dataTransfer.setData( 'itemId', item.id.toString() );
         },
         onDrop(event, id) {
-        const existingElement = this.getDraggableItems.find(x => x.cellId === id);
-        if (!existingElement) {
+            const existingElement = this.getDraggableItems.find(x => x.cellId === id);
+            if (!existingElement) {
             const itemId = parseInt( event.dataTransfer.getData( 'itemId' ) );
             const payload = {
                 itemId: itemId,
                 targetId: id
             }
             this.$store.dispatch( 'updateDraggabeItems', payload );
-        } else {
-            console.log("Элемент с таким ID уже находится в этой ячейке.");
+            } else {
+                console.log("Элемент с таким ID уже находится в этой ячейке.");
+            }
+        },
+        openInfoPanel( item ) {
+            this.infoPanelIsOpen = true;
+            this.item = item;
+        },
+        handlUpdateInfoPanelState(value) {
+            this.infoPanelIsOpen = value;
         }
-    }
     }
 }
 </script>
@@ -100,6 +114,7 @@ export default {
 
                 .draggable__count {
                     position: absolute;
+                    text-align: center;
                     bottom: -10px;
                     right: 0;
                     width: 20px;
@@ -108,18 +123,9 @@ export default {
                     box-shadow: 0 0 3px rgb(80, 80, 80) inset;
                     border-radius: 12px 0 0 0;
                     color: rgb(0, 0, 0);
+                    z-index: 1;
                 }
             }
-        }
-
-        .inventory__info-panel {
-            position: absolute;
-            width: 400px;
-            height: 100%;
-            max-height: 600px;
-            background: white;
-            right: 0px;
-            top: 0;
         }
     }
 }

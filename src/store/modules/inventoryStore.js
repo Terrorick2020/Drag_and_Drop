@@ -15,17 +15,23 @@ export default {
                 console.error( `Вознкла ошибка при передвигании инвентаря по ячейкам!` );
                 console.log( error );
             }
+        },
+        deleteDragItem( context, payload ) {
+            try {
+                context.commit( 'delDragItem', payload );
+            } catch ( error ) {
+                console.error( `Вознкла ошибка при удалении инвентаря!` );
+                console.log( error );
+            }
         }
     },
     mutations: {
         updateGridItem( state ) {
-            console.log( state.grid_item.length )
             if( !state.grid_item.length ) {
                 for( let i=0; i<42; i++ ) {
                     state.grid_item.push({
                         id: i,
-                        item: i + 1,
-                        count: 1
+                        item: i + 1
                     })
                 }
             }
@@ -37,6 +43,13 @@ export default {
                 }
                 return x;
             });
+        },
+        delDragItem( state, payload ) {
+            if ( state.draggable_items[payload.id].count == payload.count ) {
+                delete state.draggable_items[payload.id];
+            } else {
+                state.draggable_items[payload.id].count = state.draggable_items[payload.id].count - payload.count;
+            }
         }
     },
     state: {
@@ -46,7 +59,7 @@ export default {
                 id: 0,
                 title: 'АК-47',
                 color: '#c85f5f',
-                count: '3',
+                count: "3",
                 cellId: 2
             },
             {

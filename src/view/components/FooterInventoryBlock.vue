@@ -11,7 +11,11 @@
     </div>
 </template>
 
-<script></script>
+<script>
+export default {
+    name: 'FooterInventoryBlock'
+}
+</script>
 
 <style lang="scss" scoped>
 .body__footer {
